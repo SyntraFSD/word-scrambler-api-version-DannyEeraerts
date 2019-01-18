@@ -21,29 +21,6 @@ function textToWordArray(text) {
 function arrayToText(array) {
 }
 
-function getRandomNumber(max) {
-  //return random number between 0 and max (including 0 and excluding max)
-}
-
-function scrambleArray(oldArray) {
-  //return scrambled array
-}
-
-function scrambleText(text) {
-  // return scrambled text
-}
-
-function onClickScramble() {
-  // update textContent of resultContainer
-}
-
-function realTimeScramble(event) {
-  //## update textContent of resultContainer realtime
-}
-
-function getWordCount(text) {
-  //# return word count
-}
 
 function getLetterCount(text) {
   //# return letter count
@@ -64,9 +41,40 @@ function updateCounts(event) {
   // this.value == event.target.value
 }
 
+function sendRequest(event) {
+  const request = event.target;
+  console.log(request);
+  if (request.readyState === 4) {
+    const response = JSON.parse(request.responseText);
+      console.log(request.status);
+    if (request.status >= 200 && request.status < 300) {
+      console.log('success');
+      input.value=response;
+    } else {
+      console.log('error');
+    }
+  }
+}
+
+
+function getInput() {
+  const input = document.querySelector('user-input');
+  return { text: input.value };
+}
+
+
+function scramble(event) {
+  event.preventDefault();
+  const formData = getinput();
+  const request = new XMLHttpRequest();
+  request.addEventListener('readystatechange', sendRequest);
+  request.open('POST', 'http://connect4.pienter.space/api/scramble');
+  request.setRequestHeader('Content-Type', 'application/json');
+  request.send(JSON.stringify(formData));
+}
+
 //add click event listener to submitBtn
-submitBtn.addEventListener("click", onClickScramble);
+submitBtn.addEventListener("click", scramble);
 //# add input event listener to userInput for counts
 userInput.addEventListener("input", updateCounts);
-//## add input event listener to userinput for realTimeScramble
-userInput.addEventListener("input", realTimeScramble);
+

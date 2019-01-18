@@ -8,13 +8,7 @@ const resultContainer = document.querySelector('#result-container');
 const wordCountContainer = document.querySelector('#word-count');
 // # select letterCount
 const letterCountContainer = document.querySelector('#letter-count');
-
-function getUserInput() {
-  // return value of userInput
-  return userInput.value;
-}
-
-function textToWordArray(text) {
+/*function textToWordArray(text) {
   // return array of words
   return text.trim().split(' ');
 }
@@ -26,7 +20,8 @@ function arrayToText(array) {
 function getRandomNumber(max) {
   // return random number between 0 and max (including 0 and excluding max)
   return Math.floor(Math.random() * max);
-}
+}*/
+/*
 
 function scrambleArray(oldArray) {
   // return scrambled array
@@ -58,7 +53,7 @@ function realTimeScramble() {
   const userInputValue = this.value;
   resultContainer.textContent = scrambleText(userInputValue);
 }
-
+*/
 function getWordCount(text) {
   // # return word count
   const userInputArray = textToWordArray(text);
@@ -91,9 +86,39 @@ function updateCounts() {
   updateLetterCount(letterCount);
 }
 
-// add click event listener to submitBtn
-submitBtn.addEventListener('click', onClickScramble);
-// # add input event listener to userInput for counts
-userInput.addEventListener('input', updateCounts);
-// ## add input event listener to userInput for realTimeScramble
-userInput.addEventListener('input', realTimeScramble);
+function sendRequest(event) {
+  const request = event.target;
+  console.log(request);
+  if (request.readyState === 4) {
+    const response = JSON.parse(request.responseText);
+    console.log(request.status);
+    if (request.status >= 200 && request.status < 300) {
+      console.log(response.scrambled_text);
+      resultContainer.textContent = response.scrambled_text;
+    } else {
+      console.log('error');
+    }
+  }
+}
+
+function getInput() {
+  return { text: userInput.value };
+}
+
+
+function scramble(event) {
+  event.preventDefault();
+  const formData = getInput();
+  const request = new XMLHttpRequest();
+  request.addEventListener('readystatechange', sendRequest);
+  request.open('POST', 'http://connect4.pienter.space/api/scramble');
+  request.setRequestHeader('Content-Type', 'application/json');
+  request.send(JSON.stringify(formData));
+}
+
+//add click event listener to submitBtn
+submitBtn.addEventListener("click", scramble);
+//# add input event listener to userInput for counts
+userInput.addEventListener("input", updateCounts);
+
+
